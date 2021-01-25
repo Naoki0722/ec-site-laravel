@@ -18,25 +18,23 @@ class ProductsController extends Controller
      */
     public function index($category)
     {
-        // MySQLクエリ
-        // select products.id,title,description,price,image_url from products left join images on products.id = images.product_id;
-
-        // DBファサードでの書き方
-        // $items = DB::table('products')
-        //             ->select('products.id','category_id','title', 'description','price', 'image_url')
-        //             ->leftJoin('images', 'products.id', '=', 'images.product_id')
-        //             ->get();
-        // return response()->json([
-        //     'data' => $items,
-        //     'message' => 'success'
-        // ]);
-
         // Eloquentの混合の書き方 Products hasMany Image    Image belongsTo Productsの概念は後ほど考える。
-        $items = Product::select('products.id', 'category_id', 'title', 'description', 'price', 'image_url')->leftJoin('images', 'products.id', '=', 'images.product_id')->where('category_id', $category)->get();
-        return response()->json([
-            'data' => $items,
-            'message' => 'success'
-        ], 200);
+        try {
+            $items = Product::select('products.id', 'category_id', 'title', 'description', 'price', 'image_url')
+                            ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                            ->where('category_id', $category)
+                            ->get();
+            $message = 'DB connected & product_info successfully got';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'data' => $items,
+                'message' => $message
+            ], $status);
+        }
     }
 
 
@@ -60,42 +58,26 @@ class ProductsController extends Controller
     public function show($category, $product)
     {
         // リクエストに応じ、カテゴリーに該当する商品だけを取得するクエリのメモ
-        $items = DB::table('products')
-        ->select('products.id', 'category_id', 'title', 'description', 'price', 'image_url')
-        ->leftJoin('images', 'products.id', '=', 'images.product_id')
-        ->where('category_id', $category)
-        ->where('product_id', $product)
-            ->get();
-        return response()->json([
-            'data' => $items,
-            'message' => 'get success'
-        ], 200);
+        try {
+            $items = DB::table('products')
+                        ->select('products.id', 'category_id', 'title', 'description', 'price', 'image_url')
+                        ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                        ->where('category_id', $category)
+                        ->where('product_id', $product)
+                        ->get();
+            $message = 'DB connected & product_info successfully got';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'data' => $items,
+                'message' => $message
+            ], $status);
 
-        // // 商品詳細情報の取得
-        // $items = DB::table('products')
-        //     ->select('products.id', 'category_id', 'title', 'description', 'price', 'image_url')
-        //     ->leftJoin('images', 'products.id', '=', 'images.product_id')
-        //     ->where('products.id',$product->id)
-        //     ->get();
-        // return response()->json([
-        //     'data' => $items,
-        //     'message' => 'get success'
-        // ], 200);
-    }
+        }
 
-
-    public function showProduct(Request $request)
-    {
-        // リクエストに応じ、カテゴリーに該当する商品だけを取得するクエリのメモ
-        $items = DB::table('products')
-            ->select('products.id', 'category_id', 'title', 'description', 'price', 'image_url')
-            ->leftJoin('images', 'products.id', '=', 'images.product_id')
-            ->where(['category_id'=> $request->category],['products_id'=> $request->product])
-            ->get();
-        return response()->json([
-            'data' => $items,
-            'message' => 'get success'
-        ], 200);
     }
 
     /**

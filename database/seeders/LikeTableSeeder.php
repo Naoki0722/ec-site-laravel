@@ -17,24 +17,24 @@ class LikeTableSeeder extends Seeder
     {
         $now = Carbon::now();
         DB::table('likes')->insert([
-            // [
-            //     'user_id' => 1,
-            //     'product_id' => 1,
-            //     'created_at' => $now,
-            //     'updated_at' => $now
-            // ],
-            // [
-            //     'user_id' => 1,
-            //     'product_id' => 2,
-            //     'created_at' => $now,
-            //     'updated_at' => $now
-            // ],
-            // [
-            //     'user_id' => 1,
-            //     'product_id' => 3,
-            //     'created_at' => $now,
-            //     'updated_at' => $now
-            // ],
+            [
+                'user_id' => 1,
+                'product_id' => 1,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'user_id' => 1,
+                'product_id' => 2,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'user_id' => 1,
+                'product_id' => 3,
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
             [
                 'user_id' => 4,
                 'product_id' => 1,

@@ -2,33 +2,45 @@
 
 namespace App\Http\Controllers;
 
+use Dotenv\Dotenv;
 use Illuminate\Http\Request;
+use Stripe\Checkout\Session;
+
 
 class StripesController extends Controller
 {
     public function createSession(Request $request)
     {
-        \Stripe\Stripe::setApiKey('sk_test_51I9UrdGfr486TDLvT9CWBixBnxe6errLRb8HnNPmbFqd4lZLWz3gaohcWQ3x5yEKniYJQxorGyGqbFD3tHljw3XA00KUvnedDM');
-        $session = \Stripe\Checkout\Session::create([
+        // .envにキーを記載
+        $dotenv = Dotenv::createImmutable('../');
+        $dotenv->load();
+        $secretKey = getenv('STRIPE_SECRET_KEY');
+        \Stripe\Stripe::setApiKey($secretKey);
+        $session = Session::create([
+            // customer情報を一緒に乗せてセッションを作ることで顧客情報を乗せれる
+            'shipping_address_collection' => [
+                'allowed_countries' => ['JP'],
+            ],
             'payment_method_types' => ['card'],
             'line_items' => [[
                 'price_data' => [
                     'currency' => 'jpy',
                     'product_data' => [
-                        'name' => 'T-shirt',
+                        'name' => $request->title,
+                        'images' => [$request->image],
                     ],
-                    'unit_amount' => 2000,
+                    'unit_amount' => $request->price,
                 ],
-                'description' => 'テスト商品です',
-                'images' => 'https://topseller.style/wp-content/uploads/2018/07/gazou.jpg',
+                'description' => $request->description,
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => 'https://example.com/success',
+            'success_url' => "http://localhost:8080/test2?session_id={CHECKOUT_SESSION_ID}",
             'cancel_url' => 'https://example.com/cancel',
         ]);
         return response()->json([
             'id' => $session->id,
+            'customer' => $session,
             'message' => 'success'
         ], 200);
     }

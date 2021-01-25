@@ -20,36 +20,23 @@ class LikesController extends Controller
     // api/likes?user_id=○でリクエスト
     public function index(Request $request)
     {
-
-
-        //商品テーブルのデータ
-        // $item = DB::table('products')
-        //                 ->select('products.id','category_id','title','description','price','image_url')
-        //                 ->Join('images', 'products.id', '=', 'images.product_id');
-
-        // $products = DB::table('categories')
-        //                 ->select('products.id', 'categories.name as category_name', 'title', 'products.description as product_description', 'price','image_url')
-        //                 ->JoinSub($item, 'products', 'categories.id' , 'products.category_id')
-        //                 ->get();
-
-        // $items = DB::table('users')
-        //             ->select('likes.id','name', 'category_name', 'title', 'product_description','image_url')
-        //             ->leftJoin('likes', 'users.id', '=', 'likes.user_id')
-        //             ->leftJoinSub($products, 'products', 'likes.product_id', 'products.id')
-        //             ->where('user_id' , $request->user_id)
-        //             ->get();
-
-
-        $items = DB::table('likes')
-                    ->select('user_id', 'category_name','title','price')
-                    ->Join(DB::raw('(select products.id as id, categories.name as category_name, title, products.description, price from products join categories on categories.id=products.category_id) as products'), 'likes.product_id','=', 'products.id')
-                    ->where('user_id' , $request->user_id)
-                    ->get();
-
-        return response()->json([
-            'data' => $items,
-            'message' => 'like_info get'
-        ], 200);
+        try {
+            $items = DB::table('likes')
+                        ->select('user_id', 'category_name', 'title', 'price')
+                        ->Join(DB::raw('(select products.id as id, categories.name as category_name, title, products.description, price from products join categories on categories.id=products.category_id) as products'), 'likes.product_id', '=', 'products.id')
+                        ->where('user_id', $request->user_id)
+                        ->get();
+            $message = 'DB connected & like_info successfully got';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'data' => $items,
+                'message' => $message
+            ], $status);
+        }
     }
 
     /**
@@ -61,16 +48,23 @@ class LikesController extends Controller
     public function store(Request $request)
     {
         $now = Carbon::now();
-        $item = new Like;
-        $item->user_id = $request->user_id;
-        $item->product_id = $request->product_id;
-        $item->created_at = $now;
-        $item->updated_at = $now;
-        $item->save();
-        return response()->json([
-            'data' => $item,
-            'message' => 'user is liked'
-        ], 200);
+        $like = Like::where('user_id', $request->user_id)->where('product_id', $request->product_id)->first();
+        if (empty($like)) {            
+            $item = new Like;
+            $item->user_id = $request->user_id;
+            $item->product_id = $request->product_id;
+            $item->created_at = $now;
+            $item->updated_at = $now;
+            $item->save();
+            return response()->json([
+                'data' => $item,
+                'message' => 'user is liked'
+            ], 200);
+        } else {
+            return response()->json([
+                'message' => 'warning! like is exists!'
+            ]);
+        }
     }
 
     /**
@@ -104,9 +98,18 @@ class LikesController extends Controller
      */
     public function destroy(Like $like)
     {
-        $item = Like::where('user_id', $like->user_id)->where('product_id', $like->product_id)->delete();
-        return response()->json([
-            'message' => 'like is deleted'
-        ], 200);
+        try {
+            // $item = Like::where('user_id', $like->user_id)->where('product_id', $like->product_id)->delete();
+            $item = Like::where('id', $like->id)->delete();
+            $message = 'DB connected & likes successfully deleted';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'message' => $message
+            ], $status);
+        }
     }
 }
