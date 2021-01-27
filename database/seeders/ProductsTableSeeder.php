@@ -26,7 +26,14 @@ class ProductsTableSeeder extends Seeder
             'category_id' => 2,
             'title' => 'ゴールドリング',
             'description' => '光り輝くゴールドのリングです。光り輝くゴールドのリングです。光り輝くゴールドのリングです。光り輝くゴールドのリングです。',
-            'price' => 2000,
+            'price' => 5000,
+        ];
+        DB::table('products')->insert($param);
+        $param = [
+            'category_id' => 1,
+            'title' => 'レインボーピアス',
+            'description' => '虹色に輝くレインボーのピアスです、高級だけど絶対似合う！',
+            'price' => 12000,
         ];
         DB::table('products')->insert($param);
     }

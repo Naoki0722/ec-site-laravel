@@ -15,12 +15,14 @@ class CreateCartsTable extends Migration
     {
         Schema::create('carts', function (Blueprint $table) {
             $table->id();
-            $table->integer('user_id');
-            $table->integer('product_id');
-            $table->string('title');
-            $table->integer('price');
-            $table->string('image_url');
+            $table->bigInteger('user_id')->unsigned()->index();
+            $table->bigInteger('product_id')->unsigned()->index();
             $table->timestamps();
+            // 外部キー制約、usersやproductsから消されたらそれに関連するレコードは消す
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
+            // プライマリキー設定
+            $table->unique(['user_id', 'product_id']);
         });
     }
 

@@ -111,6 +111,17 @@ class UsersController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        try {
+            $user = User::where('id', $user->id)->delete();
+            $message = 'DB connected & like successfully got';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'message' => $message
+            ], $status);
+        }
     }
 }

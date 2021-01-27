@@ -15,6 +15,8 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "laravel/framework": "^8.12",
         "laravel/tinker": "^2.5",
+        "league/flysystem-aws-s3-v3": "~1.0",
+        "mopo922/laravel-treats": "^2.0",
         "stripe/stripe-php": "^7.69",
         "vlucas/phpdotenv": "^5.3"
     },

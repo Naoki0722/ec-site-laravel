@@ -36,19 +36,19 @@ class LikeTableSeeder extends Seeder
                 'updated_at' => $now
             ],
             [
-                'user_id' => 4,
+                'user_id' => 2,
                 'product_id' => 1,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
-                'user_id' => 4,
+                'user_id' => 2,
                 'product_id' => 3,
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
-                'user_id' => 5,
+                'user_id' => 3,
                 'product_id' => 2,
                 'created_at' => $now,
                 'updated_at' => $now

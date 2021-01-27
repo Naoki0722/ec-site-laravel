@@ -16,17 +16,21 @@ class CategoriesController extends Controller
      */
     public function index()
     {
-        // $item = Category::all();
-        // return response()->json([
-        //     'data' => $item,
-        //     'message' => 'get_data'
-        // ], 200);
-        $item = DB::table('categories');
-        $data = $item->get();
-        return response()->json([
-            'data' => $data,
-            'message' => 'get_data'
-        ], 200);
+
+        try {
+            $item = DB::table('categories');
+            $data = $item->get();
+            $message = 'DB connected & like successfully got';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'data' => $data,
+                'message' => $message
+            ], $status);
+        }
     }
 
     /**
@@ -48,11 +52,19 @@ class CategoriesController extends Controller
      */
     public function show(Category $category)
     {
-        $item = DB::table('categories')->where('id', $category->id)->get();
-        return response()->json([
-            'data' => $item,
-            'message' => 'get_data'
-        ], 200);
+        try {
+            $item = DB::table('categories')->where('id', $category->id)->get();
+            $message = 'DB connected & get_data';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'data' => $item,
+                'message' => $message
+            ], $status);
+        }
     }
 
     /**

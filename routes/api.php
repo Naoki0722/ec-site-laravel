@@ -17,3 +17,10 @@ Route::apiResource('categories', CategoriesController::class);
 Route::apiResource('categories.products', ProductsController::class);
 // 決済システムのためのセッション作成
 Route::post('/stripes', [StripesController::class, 'createSession']);
+
+
+
+// テスト用です。
+Route::get('/sample', [ProductsController::class, 'sample']);
+
+

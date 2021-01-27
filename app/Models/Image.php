@@ -10,8 +10,8 @@ class Image extends Model
     use HasFactory;
 
     //belongsTo設定
-    public function products()
+    public function product()
     {
-        return $this->belongsTo('App\Product', 'id','product_id');
+        return $this->belongsTo('App\Models\Product');
     }
 }

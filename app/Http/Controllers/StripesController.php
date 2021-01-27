@@ -11,7 +11,7 @@ class StripesController extends Controller
 {
     public function createSession(Request $request)
     {
-        // .envにキーを記載
+        // .envにキーを記載(セキュリティー対策)
         $dotenv = Dotenv::createImmutable('../');
         $dotenv->load();
         $secretKey = getenv('STRIPE_SECRET_KEY');

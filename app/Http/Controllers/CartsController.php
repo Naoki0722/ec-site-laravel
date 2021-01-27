@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Image;
 use App\Models\Product;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -20,18 +21,42 @@ class CartsController extends Controller
     public function index(Request $request)
     {
         try {
-            $items = Cart::where('user_id', $request->user_id)->get();
-            $message = 'DB connected & cart_info successfully got';
+            $user = User::where('id', $request->user_id)->first();
+            $products = $user->products_cart()->get();
+            $data = [];
+            foreach ($products as $product) {
+                $data[] = [
+                    'product_name' => $product->title,
+                    'category_name' => $product->category->name,
+                    'product_price' => $product->price,
+                    'images' => $product->images
+                ];
+            }
+            $message = 'DB connected & carts info got!';
             $status = 200;
         } catch (\Throwable $th) {
             $message = 'ERROR DB connection NG ';
             $status = 500;
         } finally {
             return response()->json([
-                'data' => $items,
+                'data' => $data,
                 'message' => $message
             ], $status);
         }
+
+        // try {
+        //     $items = Cart::where('user_id', $request->user_id)->get();
+        //     $message = 'DB connected & cart_info successfully got';
+        //     $status = 200;
+        // } catch (\Throwable $th) {
+        //     $message = 'ERROR DB connection NG ';
+        //     $status = 500;
+        // } finally {
+        //     return response()->json([
+        //         'data' => $items,
+        //         'message' => $message
+        //     ], $status);
+        // }
     }
 
     /**
@@ -42,29 +67,23 @@ class CartsController extends Controller
      */
     public function store(Request $request)
     {
-        $now = Carbon::now();
-        $product = Product::where('id', $request->product_id)->first();
-        $image = Image::where('product_id', $request->product_id)->first();
-        if(empty($product)) {
-            // もし既にカートにデータがあればinsertできないように弾く必要あり
-            $item = new Cart;
-            $item->user_id = $request->user_id;
-            $item->product_id = $request->product_id;
-            $item->title = $product->title;
-            $item->price = $product->price;
-            $item->image_url = $image->image_url;
-            $item->created_at = $now;
-            $item->updated_at = $now;
-            $item->save();
+
+        try {
+            // 多対多で簡潔に書く
+            $user = User::where('id', $request->user_id)->first();
+            $data = $user->cart($request->product_id); // User.phpのcartを呼び出す
+            $message = 'DB connected & user insert cart!';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
             return response()->json([
-                'data' => $item,
-                'message' => 'cart is created!'
-            ], 200);
-        } else {
-            return response()->json([
-                'message' => 'warning! cart is exists!'
-            ]);
+                'data' => $data,
+                'message' => $message
+            ], $status);
         }
+
     }
 
     /**
@@ -98,21 +117,40 @@ class CartsController extends Controller
      */
 
     //api/carts/カートidを入れればいい
-    public function destroy(Request $request)
+    public function destroy(Cart $cart)
     {
+
         try {
-            // Cart::where('user_id', $request->user_id)->where('product_id', $request->product_id)->delete();
-            $item = Cart::where('user_id', $request->user_id)->where('product_id', $request->product_id)->delete();
-            $message = 'DB connected & cart successfully deleted';
+            // 多対多で簡潔に書く
+            $user = User::where('id', $cart->user_id)->first();
+            $data = $user->delcart($cart->product_id); // User.phpのunlikeを呼び出す
+            $message = 'DB connected & like destory';
             $status = 200;
         } catch (\Throwable $th) {
             $message = 'ERROR DB connection NG ';
             $status = 500;
         } finally {
             return response()->json([
-                'data' => $item,
+                'data' => $data,
                 'message' => $message
             ], $status);
         }
+
+        
+        // 従来の書き方
+        // try {
+        //     // Cart::where('user_id', $request->user_id)->where('product_id', $request->product_id)->delete();
+        //     $item = Cart::where('user_id', $request->user_id)->where('product_id', $request->product_id)->delete();
+        //     $message = 'DB connected & cart successfully deleted';
+        //     $status = 200;
+        // } catch (\Throwable $th) {
+        //     $message = 'ERROR DB connection NG ';
+        //     $status = 500;
+        // } finally {
+        //     return response()->json([
+        //         'data' => $item,
+        //         'message' => $message
+        //     ], $status);
+        // }
     }
 }
