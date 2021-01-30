@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\Hash;
+
 
 class UsersController extends Controller
 {
@@ -19,7 +22,7 @@ class UsersController extends Controller
     {
         try {
             $items = User::all();
-            $message = 'DB connected & account_infor successfully got';
+            $message = 'DB connected & account_info successfully got';
             $status = 200;
         } catch (\Throwable $th) {
             $message = 'ERROR DB connection NG ';
@@ -41,6 +44,7 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
+            
         try {
             $now = Carbon::now();
             $item = new User;
@@ -72,7 +76,19 @@ class UsersController extends Controller
      */
     public function show(User $user)
     {
-        
+        try {
+            $user = User::where('id', $user->id)->first();
+            $message = 'DB connected & user successfully got!';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'data' => $user,
+                'massage' => $message
+            ], $status);
+        }
     }
 
     /**
@@ -85,10 +101,12 @@ class UsersController extends Controller
     public function update(Request $request, User $user)
     {
         try {
+            $now = Carbon::now();
             $user->name = $request->name;
             $user->email = $request->email;
             $user->tell_number = $request->tell_number;
             $user->password = Hash::make($request->password);
+            $user->updated_at = $now;
             $user->save();
             $message = 'DB connected & account successfully created';
             $status = 200;
@@ -113,7 +131,7 @@ class UsersController extends Controller
     {
         try {
             $user = User::where('id', $user->id)->delete();
-            $message = 'DB connected & like successfully got';
+            $message = 'DB connected & user successfully delete';
             $status = 200;
         } catch (\Throwable $th) {
             $message = 'ERROR DB connection NG ';

@@ -49,7 +49,8 @@ class User extends Authenticatable
             'likes', // 中間テーブル名
             'user_id', // 中間テーブルにあるFK
             'product_id'   // リレーション先モデルのFK
-        )->withTimestamps(); // withTimestampsメソッドで中間テーブルのタイムスタンプを更新
+        )->withPivot('id')
+        ->withTimestamps(); // withTimestampsメソッドで中間テーブルのタイムスタンプを更新
     }
 
 
@@ -79,6 +80,8 @@ class User extends Authenticatable
 
         if($exist) {
             return false;
+            // deleteメソッドに飛ばすことも可能
+            // return $this->unlike($productId);
         } else {
             $this->products()->attach($productId);
             return true;

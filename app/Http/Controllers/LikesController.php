@@ -27,10 +27,12 @@ class LikesController extends Controller
             $data = [];
             foreach ($products as $product) {
                 $data[] = [
+                    'like_id' => $product->pivot->id,
+                    'product_id' => $product->id,
                     'product_name' => $product->title,
                     'category_name' => $product->category->name,
                     'product_price' => $product->price,
-                    'images' => $product->images
+                    'images' => $product->images()->select('product_id','image_url')->get()->toArray()
                 ];
             }
             $message = 'DB connected & like_info successfully got';

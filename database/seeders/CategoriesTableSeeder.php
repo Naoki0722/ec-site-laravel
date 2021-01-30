@@ -26,5 +26,15 @@ class CategoriesTableSeeder extends Seeder
             'description' => 'あくまでテストです',
         ];
         DB::table('categories')->insert($param);
+        $param = [
+            'name' => '指輪',
+            'description' => 'これはあくまでテストですので関係ないです',
+        ];
+        DB::table('categories')->insert($param);
+        $param = [
+            'name' => '修理',
+            'description' => 'これはあくまでテストですので関係ないです',
+        ];
+        DB::table('categories')->insert($param);
     }
 }
