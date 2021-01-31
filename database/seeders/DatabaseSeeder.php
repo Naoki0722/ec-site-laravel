@@ -16,10 +16,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // 1つのカテゴリーに複数商品、商品に複数画像のダミーデータを生成する方法を勉強
+        // 1つのカテゴリーに複数商品、商品に複数画像のダミーデータを生成する方法を勉強できた
         // Product::factory()
         //     ->has(Image::factory()->count(3))
         //     ->create();
+    
 
 
 
