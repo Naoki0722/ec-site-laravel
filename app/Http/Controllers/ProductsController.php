@@ -18,8 +18,6 @@ class ProductsController extends Controller
     //※ここは私のクエリテスト遊び場です...※
     public function sample()
     {
-
-
         // $categories = Category::all();
         // $data=[];
         // foreach ($categories as $category) {
@@ -144,51 +142,61 @@ class ProductsController extends Controller
      */
     public function store(Request $request)
     {
-        // 画像のS3へのアップロード
-        // 複数画像は配列にて格納されているものと仮定し、foreachで回してデータを格納し、1個ずつS3に保存する。
-        // 保存したURLをデータベースに格納する
-        $file_name = $request->image;
-        $file_name = preg_replace('/^data:image.*base64,/', '', $file_name);
-        $file_name = str_replace('', '+', $file_name);
-        $image = base64_decode($file_name);
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime_type = finfo_buffer($finfo, $image);
-        $extensions = [
-            'image/gif' => 'gif',
-            'image/jpeg' => 'jpeg',
-            'image/png' => 'png',
-        ];
-        $random_str = Str::random(10); // 保存新ファイル名(ランダム生成)
-        $filename = $random_str . '.' . $extensions[$mime_type];
-        Storage::disk('s3')->put($filename, $image);
-        $image_path = Storage::disk('s3')->url($filename);
+
+        try {
+            // // 商品登録(productsテーブルへインサート)
+            $now = Carbon::now();
+            $product = new Product;
+            $product->category_id = $request->category_id;
+            $product->title = $request->title;
+            $product->description = $request->description;
+            $product->price = $request->price;
+            $product->created_at = $now;
+            $product->updated_at = $now;
+            $product->save();
 
 
-        // 商品登録(productsテーブルへインサート)
-        $now = Carbon::now();
-        $product = new Product;
-        $product->category_id = $request->category_id;
-        $product->title = $request->title;
-        $product->description = $request->description;
-        $product->price = $request->price;
-        $product->created_at = $now;
-        $product->updated_at = $now;
-        $product->save();
+            // 画像をひとまずs3へ
+            $images = $request->image_url;
+            foreach ($images as $image) {
+                list(, $fileData) = explode(';', $image);
+                list(, $fileData) = explode(',', $fileData);
+                $fileData = base64_decode($fileData);
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $mime_type = finfo_buffer($finfo, $fileData);
+                $extensions = [
+                    'image/gif' => 'gif',
+                    'image/jpeg' => 'jpeg',
+                    'image/png' => 'png',
+                ];
+                // ランダムなファイル名 + 拡張子
+                $random_str = Str::random(10); // 保存新ファイル名(ランダム生成)
+                $fileName = $random_str . '.' . $extensions[$mime_type];
 
-        // 画像登録(imagesテーブルへインサート)
-        $image = new Image;
-        $image->product_id = $product->id;
-        $image->image_url = $image_path;
-        $image->save();
+                // publicにするとapp/storage/app/public/内に保存
+                Storage::disk('s3')->put($fileName, $fileData);
+                $image_paths[] = Storage::disk('s3')->url($fileName);
+            }
 
+            // 画像登録(imagesテーブルへインサート)
+            foreach ($image_paths as $image_path) {
+                $image = new Image;
+                $image->product_id = $product->id;
+                $image->image_url = $image_path;
+                $image->save();
+            }
+            $message = 'DB connected & product created!';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        }
         return response()->json([
             'product_data' => $product,
             'image_data' => $image,
-            'message' => 'product created!'
-        ] , 200);
-
+            'message' => $message
+        ], $status);
         
-
     }
 
     /**
@@ -256,10 +264,30 @@ class ProductsController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $product, $category)
     {
-        //
+        try {
+            // 商品情報の変更
+            $now = Carbon::now();
+            $product = Product::where('id', $product)->where('category_id', $category)->first();
+            $product->category_id = $request->category_id;
+            $product->title = $request->title;
+            $product->description = $request->description;
+            $product->price = $request->price;
+            $product->updated_at = $now;
+            $product->save();
+            $message = 'DB connected & product successfully updated!';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        }
+        return response()->json([
+            'data' => $product,
+            'message' => $message
+        ], $status);
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -267,8 +295,27 @@ class ProductsController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy($category, $product)
     {
-        //
+        // テーブルはもちろん、S3からも消す。
+        try {
+            Product::where('category_id', $category)->where('id',$product)->delete();
+            $images = Image::where('product_id', '5')->select('image_url')->get();
+            foreach ($images as $image) {
+                $split = explode('com/', $image->image_url);
+                $fileName = $split[1];
+                Storage::disk('s3')->delete($fileName);
+            }
+            Image::where('product_id', $product)->delete();
+            $message = 'DB connected & product successfully deleted!';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        }
+        return response()->json([
+            'data' => $product,
+            'message' => $message
+        ], $status);
     }
 }

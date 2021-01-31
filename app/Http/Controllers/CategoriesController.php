@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -41,7 +42,25 @@ class CategoriesController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $now = Carbon::now();
+            $category = new Category;
+            $category->name = $request->name;
+            $category->description = $request->description;
+            $category->created_at = $now;
+            $category->updated_at = $now;
+            $category->save();
+            $message = 'DB connected & category successfully created!';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'data' => $category,
+                'message' => $message
+            ], $status);
+        }
     }
 
     /**
@@ -87,6 +106,17 @@ class CategoriesController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        try {
+            Category::where('id', $category->id)->delete();
+            $message = 'DB connected & category deleted!';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG ';
+            $status = 500;
+        } finally {
+            return response()->json([
+                'message' => $message
+            ], $status);
+       }
     }
 }
