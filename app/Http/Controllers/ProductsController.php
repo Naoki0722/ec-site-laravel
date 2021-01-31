@@ -300,7 +300,7 @@ class ProductsController extends Controller
         // テーブルはもちろん、S3からも消す。
         try {
             Product::where('category_id', $category)->where('id',$product)->delete();
-            $images = Image::where('product_id', '5')->select('image_url')->get();
+            $images = Image::where('product_id', $product)->select('image_url')->get();
             foreach ($images as $image) {
                 $split = explode('com/', $image->image_url);
                 $fileName = $split[1];
