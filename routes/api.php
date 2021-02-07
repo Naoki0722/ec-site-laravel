@@ -15,7 +15,7 @@ Route::apiResource('/carts', CartsController::class);
 Route::apiResource('/likes', LikesController::class);
 Route::apiResource('categories', CategoriesController::class);
 Route::apiResource('categories.products', ProductsController::class);
-// 決済システムのためのセッション作成
+// 決済システムのためのセッション作成する
 Route::post('/stripes', [StripesController::class, 'createSession']);
 
 
