@@ -17,7 +17,6 @@ class StripesController extends Controller
         $secretKey = getenv('STRIPE_SECRET_KEY');
         \Stripe\Stripe::setApiKey($secretKey);
         $session = Session::create([
-            // customer情報を一緒に乗せてセッションを作ることで顧客情報を乗せれる
             'shipping_address_collection' => [
                 'allowed_countries' => ['JP'],
             ],

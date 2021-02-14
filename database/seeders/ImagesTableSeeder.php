@@ -112,7 +112,7 @@ class ImagesTableSeeder extends Seeder
             [
                 'id' => 14,
                 'product_id' => 5,
-                'image_url' => 'https://tokuda-ec-site.s3-ap-northeast-1.amazonaws.com/7-1.JPG',
+                'image_url' => 'https://tokuda-ec-site.s3-ap-northeast-1.amazonaws.com/8-2.JPG',
                 'created_at' => $now,
                 'updated_at' => $now
             ],
@@ -148,6 +148,20 @@ class ImagesTableSeeder extends Seeder
                 'id' => 19,
                 'product_id' => 8,
                 'image_url' => 'https://tokuda-ec-site.s3-ap-northeast-1.amazonaws.com/5-1.JPG',
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'id' => 20,
+                'product_id' => 8,
+                'image_url' => 'https://tokuda-ec-site.s3-ap-northeast-1.amazonaws.com/5-2.JPG',
+                'created_at' => $now,
+                'updated_at' => $now
+            ],
+            [
+                'id' => 21,
+                'product_id' => 8,
+                'image_url' => 'https://tokuda-ec-site.s3-ap-northeast-1.amazonaws.com/5-3.JPG',
                 'created_at' => $now,
                 'updated_at' => $now
             ],
