@@ -11,7 +11,7 @@ class StripesController extends Controller
 {
     public function createSession(Request $request)
     {
-        // .envにキーを記載(セキュリティー対策)
+        // .envにキーを記載(セキュリティー対策のため)
         $dotenv = Dotenv::createImmutable(dirname(__DIR__, 3));
         $dotenv->load();
         $secretKey = getenv('STRIPE_SECRET_KEY');
@@ -35,8 +35,8 @@ class StripesController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => "http://localhost:8080/test2?session_id={CHECKOUT_SESSION_ID}",
-            'cancel_url' => 'https://example.com/cancel',
+            'success_url' => "https://amazing-wilson-5152ff.netlify.app/pthanks",
+            'cancel_url' => 'https://amazing-wilson-5152ff.netlify.app/carts',
         ]);
         return response()->json([
             'id' => $session->id,
