@@ -35,8 +35,8 @@ class StripesController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => "http://localhost:8080/pthanks",
-            'cancel_url' => 'http://localhost:8080/carts',
+            'success_url' => "https://amazing-wilson-5152ff.netlify.app/pthanks",
+            'cancel_url' => 'https://amazing-wilson-5152ff.netlify.app/carts',
         ]);
         return response()->json([
             'id' => $session->id,
