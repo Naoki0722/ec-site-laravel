@@ -12,9 +12,10 @@ class StripesController extends Controller
     public function createSession(Request $request)
     {
         // .envにキーを記載(セキュリティー対策のため)
-        $dotenv = Dotenv::createImmutable(dirname(__DIR__, 3));
-        $dotenv->load();
-        $secretKey = getenv('STRIPE_SECRET_KEY');
+        // $dotenv = Dotenv::createImmutable(dirname(__DIR__, 3));
+        // $dotenv->load();
+        // $secretKey = getenv('STRIPE_SECRET_KEY');
+        $secretKey = env('STRIPE_SECRET_KEY');
         \Stripe\Stripe::setApiKey($secretKey);
         $session = Session::create([
             'shipping_address_collection' => [
