@@ -35,8 +35,8 @@ class StripesController extends Controller
                 'quantity' => 1,
             ]],
             'mode' => 'payment',
-            'success_url' => "http://localhost:8080/test2?session_id={CHECKOUT_SESSION_ID}",
-            'cancel_url' => 'https://example.com/cancel',
+            'success_url' => "http://localhost:8080/pthanks",
+            'cancel_url' => 'http://localhost:8080/carts',
         ]);
         return response()->json([
             'id' => $session->id,
