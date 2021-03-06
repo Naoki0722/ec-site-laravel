@@ -19,26 +19,29 @@ class UserTableSeeder extends Seeder
         $now = Carbon::now();
         DB::table('users')->insert([
             [
-                'name' => 'なおき',
+                'name' => 'nao',
                 'email' => 'test@test.com',
                 'tell_number' => '00012340000',
-                'password' => '01380722',
+                'role' => 5,
+                'user_id' => 'tttttteeeseefdsaf',
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
-                'name' => 'えりこ',
+                'name' => 'eri',
                 'email' => 'test1@test.com',
                 'tell_number' => '0133339455',
-                'password' => '01380722',
+                'role' => 10,
+                'user_id' => 'tttttt3feaeeeseefdsaf',
                 'created_at' => $now,
                 'updated_at' => $now
             ],
             [
-                'name' => 'とくだ',
+                'name' => 'tokuda',
                 'email' => 'test2@test.com',
                 'tell_number' => '0001122340000',
-                'password' => '010000',
+                'role' => 10,
+                'user_id' => 't9dfdftteeeseefdsaf',
                 'created_at' => $now,
                 'updated_at' => $now
             ],

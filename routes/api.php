@@ -15,13 +15,17 @@ Route::apiResource('/users', UsersController::class);
 Route::apiResource('/carts', CartsController::class);
 Route::apiResource('/likes', LikesController::class);
 Route::apiResource('categories', CategoriesController::class);
-Route::apiResource('categories.products', ProductsController::class);
-Route::post('/login', [LoginController::class, 'login']);
+// Route::apiResource('categories.products', ProductsController::class);
+// 一部管理者権限の人だけ使えるメソッドあり
+Route::get('categories/{category}/products', [ProductsController::class, 'index']);
+Route::get('categories/{category}/products/{product}', [ProductsController::class, 'show']);
+Route::post('categories/{category}/products', [ProductsController::class, 'store'])->middleware('admin');
+Route::put('categories/{category}/products/{product}', [ProductsController::class, 'update'])->middleware('admin');
+Route::delete('categories/{category}/products/{product}', [ProductsController::class, 'destroy'])->middleware('admin');
+
+Route::post('/login', [LoginController::class, 'login'])->middleware('admin');
 // 決済システムのためのセッション作成
 Route::post('/stripes', [StripesController::class, 'createSession']);
-
-
-
 Route::delete('/carts', [CartsController::class, 'delete']);
 Route::delete('/likes', [LikesController::class, 'delete']);
 

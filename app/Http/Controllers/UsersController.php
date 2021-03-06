@@ -8,8 +8,6 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
-use Illuminate\Support\Facades\Hash;
-
 
 class UsersController extends Controller
 {
@@ -30,6 +28,7 @@ class UsersController extends Controller
         } finally {
             return response()->json([
                 'data' => $items,
+                // 'data' => $uid,
                 'message' => $message
             ], $status);
         }
@@ -44,14 +43,14 @@ class UsersController extends Controller
      */
     public function store(Request $request)
     {
-            
         try {
             $now = Carbon::now();
             $item = new User;
             $item->name = $request->name;
             $item->email = $request->email;
             $item->tell_number = $request->tell_number;
-            $item->password = Hash::make($request->password);
+            $item->role = $request->role;
+            $item->user_id = $request->user_id;
             $item->created_at = $now;
             $item->updated_at = $now;
             $item->save();
@@ -105,7 +104,6 @@ class UsersController extends Controller
             $user->name = $request->name;
             $user->email = $request->email;
             $user->tell_number = $request->tell_number;
-            // $user->password = Hash::make($request->password);
             $user->updated_at = $now;
             $user->save();
             $message = 'DB connected & account successfully created';

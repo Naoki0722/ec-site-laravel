@@ -28,7 +28,8 @@ class UserFactory extends Factory
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail,
             'tell_number' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'role' => $this->faker->randomElement([5, 10]),
+            'user_id' => $this->faker->text(10),
             'created_at' => $now,
             'updated_at' => $now,
         ];

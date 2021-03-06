@@ -155,4 +155,69 @@ class UserTest extends TestCase
         $response->assertStatus(404);
         User::where('name', '名前変更された！！')->delete();
     } 
+
+
+
+    // 追加実装対応
+    // パスワード変更で、変更したパスワードになっていることを確認する
+    public function testEditPass()
+    {
+        $user = User::where('password','')->first();
+        $response = $this->json('put', "/api/users/{$user_id}",[
+            'password' => '01380722'
+        ]);
+        $response->assertStatus(200)
+                ->assertJsonFragment([
+                    'password' => '01380722'
+                ]);
+
+    }
+
+
+
+    // パスワード空の場合、変更に失敗する
+    public function testFailedEditPass()
+    {
+        $user = User::where('password', '')->first();
+        $response = $this->json('put', "/api/users/{$user_id}", [
+            'password' => ''
+        ]);
+        $response->assertStatus(500);
+    }
+
+
+    // 新規登録の際、管理者権限になっていることを確認する
+    public function testCreateAdminUser()
+    {
+        $response = $this->json('POST', '/api/users', [
+            'name' => 'naokidesu',
+            'email' => 'test20@ates.com',
+            'tell_number' => '00222990000',
+            'password' => '0013820722',
+            'role' => 5
+        ]);
+        $response->assertStatus(200)
+                ->assertJsonFragment([
+                    'role' => 5,
+                    'name' => 'naokidesu'
+                ]);
+    }
+
+
+    // ユーザー登録で管理者権限になっていないことを確認する
+    public function testFailedCreateAdminUser()
+    {
+        $response = $this->json('POST', '/api/users', [
+            'name' => 'testnaoki',
+            'email' => 'test100@ates.com',
+            'tell_number' => '0022422990000',
+            'password' => '0013820722',
+            'role' => 10
+        ]);
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'role' => 10,
+                'name' => 'testnaoki'
+            ]);
+    }
 }

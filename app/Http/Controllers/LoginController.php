@@ -12,20 +12,15 @@ class LoginController extends Controller
     {
         try {
             $user = DB::table('users')->where('email', $request->email)->first();
-            if(Hash::check($request->password, $user->password)) {
-                $message = 'DB connected & user info successfully got';
-                $status = 200;
-            } else {
-                $message = 'DB connected bun user mistaken';
-                $status = 500;
-            }
+            $message = 'DB connected & user info successfully got';
+            $status = 200;
         } catch (\Throwable $th) {
             $message = 'ERROR DB connection NG ';
             $status = 500;
         } finally {
             return response()->json([
                 'data' => $user,
-                'message' => $message
+                'message' => $message,
             ], $status);
         }
 

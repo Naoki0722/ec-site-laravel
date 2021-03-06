@@ -7,6 +7,7 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
+use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
 
@@ -26,7 +27,6 @@ class ProductTest extends TestCase
         $response->assertStatus(200)
                 ->assertJsonFragment([
                     'category_name' => 'ピアス',
-                    'image_url' => 'https://tokuda-ec-site.s3-ap-northeast-1.amazonaws.com/1-1.JPG'
                 ]);
     }
 
@@ -38,7 +38,6 @@ class ProductTest extends TestCase
         $response->assertStatus(200)
             ->assertJsonFragment([
                 'product_name' => 'クロスシルバーピアス',
-                'image_url' => 'https://tokuda-ec-site.s3-ap-northeast-1.amazonaws.com/1-1.JPG'
             ]);
     }
 
@@ -64,5 +63,113 @@ class ProductTest extends TestCase
                     'product_name' => 'クロスシルバーピアス'
                 ]);
     }
+
+
+
+
     
+
+    // 今回追加実装分
+    // 商品登録ができることを確認する(管理者だけ)
+    public function testRegisterProduct ()
+    {
+        $user = User::where('role', '5')->first();
+        $response = $this->json('POST', '/api/categories/1/products/', [
+            'title' => 'テスト商品',
+            'description' => 'テストですテストですテストです',
+            'price' => '1500',
+            'image_url' => [''],
+            'role' => $user->role
+        ]);
+        $response->assertStatus(200);
+    }
+    // 商品名や画像がなければエラーを出す
+    public function testRegisterFailedProduct()
+    {
+        $user = User::where('role', '5')->first();
+        $response = $this->json('POST', '/api/categories/1/products/', [
+            'title' => '',
+            'description' => 'テストテストですテストですテストですテストですテストです',
+            'price' => '5500',
+            'image_url' => [''],
+            'role' => $user->role
+        ]);
+    }
+    // ユーザーはできない
+    public function testUserRegisterProduct()
+    {
+        $user = User::where('role', '10')->first();
+        $response = $this->json('POST', '/api/categories/1/products/', [
+            'title' => 'ユーザーとして商品追加',
+            'description' => 'テストですテストですテストです',
+            'price' => '5500',
+            'image_url' => [''],
+            'role' => $user->role
+        ]);
+        $response->assertStatus(200);
+    }
+
+    // 編集成功(管理者のみ)
+    public function testEditProduct()
+    {
+        $user = User::where('role', '5')->first();
+        $product = DB::table('products')->where('title','テスト商品')->first();
+        $response = $this->json('PUT', `/api/categories/1/products/{$product->id}`, [
+            'title' => 'テスト商品名変更',
+            'description' => 'テスト商品名変更ですテスト商品名変更ですテスト商品名変更です',
+            'price' => '9000',
+            'image_url' => [''],
+            'role' => $user->role
+        ]);
+        $response->assertStatus(200);
+    }
+    // 編集失敗(ユーザー)
+    public function testEditFailedProduct()
+    {
+        $user = User::where('role', '10')->first();
+        $product = DB::table('products')->where('title', 'テスト商品名変更')->first();
+        $response = $this->json('PUT', `/api/categories/1/products/{$product->id}`, [
+            'title' => 'テスト',
+            'description' => 'テスト商品名変更ですテスト商品名変更ですテスト商品名変更です',
+            'price' => '9000',
+            'image_url' => [''],
+            'role' => $user->role
+        ]);
+        $response->assertStatus(500);
+    }
+    // 編集失敗(タイトルが空)
+    public function testEditTitleFailedProduct()
+    {
+        $user = User::where('role', '5')->first();
+        $product = DB::table('products')->where('title', 'テスト商品名変更')->first();
+        $response = $this->json('PUT', `/api/categories/1/products/{$product->id}`, [
+            'title' => '',
+            'description' => 'テスト商品名変更ですテスト商品名変更ですテスト商品名変更です',
+            'price' => '9000',
+            'image_url' => [''],
+            'role' => $user->role
+        ]);
+        $response->assertStatus(500);
+    }
+    // 商品の削除(ユーザーは不可能)
+    public function testUserDeleteProduct()
+    {
+        $user = User::where('role', '10')->first();
+        $product = DB::table('products')->where('title', 'テスト商品名変更')->first();
+        $response = $this->json('delete', `/api/categories/1/products/{$product->id}`,[
+            'role' => $user
+        ]);
+        $response->assertStatus(200);
+    }
+    // 商品の削除
+    public function testDeleteProduct()
+    {
+        $user = User::where('role', '5')->first();
+        $product = DB::table('products')->where('title', 'テスト商品名変更')->first();
+        $response = $this->json('delete', `/api/categories/1/products/{$product->id}`, [
+            'role' => $user
+        ]);
+        $response->assertStatus(200);
+    }
+
 }
