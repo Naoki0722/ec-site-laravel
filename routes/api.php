@@ -23,10 +23,13 @@ Route::post('categories/{category}/products', [ProductsController::class, 'store
 Route::put('categories/{category}/products/{product}', [ProductsController::class, 'update'])->middleware('admin');
 Route::delete('categories/{category}/products/{product}', [ProductsController::class, 'destroy'])->middleware('admin');
 
-Route::post('/login', [LoginController::class, 'login'])->middleware('admin');
 // 決済システムのためのセッション作成
 Route::post('/stripes', [StripesController::class, 'createSession']);
 Route::delete('/carts', [CartsController::class, 'delete']);
 Route::delete('/likes', [LikesController::class, 'delete']);
 
+// 通常ログイン
+Route::post('/login', [LoginController::class, 'login']);
+// 管理者ログイン
+Route::post('/admin/login', [LoginController::class, 'adminLogin'])->middleware('admin');
 

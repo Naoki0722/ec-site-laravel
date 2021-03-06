@@ -25,4 +25,13 @@ class LoginController extends Controller
         }
 
     }
+    public function adminLogin(Request $request)
+    {
+        $user = DB::table('users')->where('email', $request->email)->first();
+        return response()->json([
+            'data' => $user,
+            'message' => 'admin success login',
+        ], 200);
+
+    }
 }
