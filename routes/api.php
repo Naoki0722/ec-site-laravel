@@ -15,7 +15,6 @@ Route::apiResource('/users', UsersController::class);
 Route::apiResource('/carts', CartsController::class);
 Route::apiResource('/likes', LikesController::class);
 Route::apiResource('categories', CategoriesController::class);
-// Route::apiResource('categories.products', ProductsController::class);
 // 一部管理者権限の人だけ使えるメソッドあり
 Route::get('categories/{category}/products', [ProductsController::class, 'index']);
 Route::get('categories/{category}/products/{product}', [ProductsController::class, 'show']);
