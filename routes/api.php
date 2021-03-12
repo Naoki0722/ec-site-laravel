@@ -31,4 +31,5 @@ Route::delete('/likes', [LikesController::class, 'delete']);
 Route::post('/login', [LoginController::class, 'login']);
 // 管理者ログイン
 Route::post('/admin/login', [LoginController::class, 'adminLogin'])->middleware('admin');
-
+// 全商品取得
+Route::get('/products', [ProductsController::class, 'getAll']);

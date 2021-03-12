@@ -112,6 +112,34 @@ class ProductsController extends Controller
         
     }
 
+    public function getAll()
+    {
+        try {
+            $items = Product::all();
+            $data =[];
+            foreach($items as $item) {
+                $data[] = [
+                    'category_id' => $item->category->id,
+                    'category_name' => $item->category->name,
+                    'product_id' => $item->id,
+                    'product_name' => $item->title,
+                    'description' => $item->description,
+                    'price' => $item->price,
+                    'image_url' => $item->images()->select('image_url')->get()->toArray()
+                ];
+            }
+            $message = 'productsList successfully get';
+            $status = 200;
+        } catch (\Throwable $th) {
+            $message = 'ERROR DB connection NG';
+            $status = 500;
+        }
+        return response()->json([
+            'data' => $data,
+            'message' => $message
+        ],$status);
+    }
+
     /**
      * Display the specified resource.
      *
@@ -130,6 +158,7 @@ class ProductsController extends Controller
             $data = [];
             foreach ($products as $product) {
                 $data[] = [
+                    'category_id' => $product->category->id,
                     'category_name' => $product->category->name,
                     'product_name' => $product->title,
                     'description' => $product->description,
