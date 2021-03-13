@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CartsController;
 use App\Http\Controllers\CategoriesController;
+use App\Http\Controllers\ImagesController;
 use App\Http\Controllers\LikesController;
 use App\Http\Controllers\ProductsController;
 use App\Http\Controllers\UsersController;
@@ -21,6 +22,10 @@ Route::get('categories/{category}/products/{product}', [ProductsController::clas
 Route::post('categories/{category}/products', [ProductsController::class, 'store'])->middleware('admin');
 Route::put('categories/{category}/products/{product}', [ProductsController::class, 'update'])->middleware('admin');
 Route::delete('categories/{category}/products/{product}', [ProductsController::class, 'destroy'])->middleware('admin');
+
+// Route::delete('products/{product}/images/{image}', [ImagesController::class, 'destroy'])->middleware('admin');
+// Route::delete('products/{product}/images/{image}', [ImagesController::class, 'destroy']);
+Route::apiResource('images', ImagesController::class);
 
 // 決済システムのためのセッション作成
 Route::post('/stripes', [StripesController::class, 'createSession']);

@@ -163,7 +163,8 @@ class ProductsController extends Controller
                     'product_name' => $product->title,
                     'description' => $product->description,
                     'price' => $product->price,
-                    'image_url' => $product->images()->select('image_url')->get()->toArray()
+                    // 'image_url' => $product->images()->select('image_url')->get()->toArray()
+                    'image_url' => $product->images()->select('id','image_url')->get()->toArray()
                 ];
             }
             $message = 'DB connected & product_info successfully got';
@@ -191,7 +192,6 @@ class ProductsController extends Controller
             // 商品テーブル情報の変更
             $now = Carbon::now();
             $product = Product::where('id', $product)->where('category_id', $category)->first();
-            // $product = Product::all();
             $product->category_id = $request->category_id;
             $product->title = $request->title;
             $product->description = $request->description;
