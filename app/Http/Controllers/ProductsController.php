@@ -185,12 +185,13 @@ class ProductsController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $product, $category)
+    public function update(Request $request, $category, $product)
     {
         try {
             // 商品テーブル情報の変更
             $now = Carbon::now();
             $product = Product::where('id', $product)->where('category_id', $category)->first();
+            // $product = Product::all();
             $product->category_id = $request->category_id;
             $product->title = $request->title;
             $product->description = $request->description;
