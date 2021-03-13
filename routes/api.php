@@ -23,9 +23,8 @@ Route::post('categories/{category}/products', [ProductsController::class, 'store
 Route::put('categories/{category}/products/{product}', [ProductsController::class, 'update'])->middleware('admin');
 Route::delete('categories/{category}/products/{product}', [ProductsController::class, 'destroy'])->middleware('admin');
 
-// Route::delete('products/{product}/images/{image}', [ImagesController::class, 'destroy'])->middleware('admin');
-// Route::delete('products/{product}/images/{image}', [ImagesController::class, 'destroy']);
-Route::apiResource('images', ImagesController::class);
+// 画像処理を実装
+Route::apiResource('images', ImagesController::class)->middleware('admin');
 
 // 決済システムのためのセッション作成
 Route::post('/stripes', [StripesController::class, 'createSession']);
